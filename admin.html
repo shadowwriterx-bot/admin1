@@ -3,70 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title>Admin - Kalitlar</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; padding: 10px; background: #fafafa; }
         .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 15px; border: 2px solid #d32f2f; }
         .section-title { background: #ffebee; padding: 10px; border-radius: 8px; font-weight: bold; margin: 20px 0; text-align: center; color: #b71c1c; }
-        .q-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; flex-wrap: wrap; }
-        .opts { display: flex; gap: 5px; }
+        .q-row { padding: 10px 0; border-bottom: 1px solid #eee; }
+        .opts { display: flex; gap: 5px; margin-top: 5px; }
         input[type="radio"] { display: none; }
         label { width: 35px; height: 35px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; border-radius: 5px; cursor: pointer; font-weight: bold; }
         input:checked + label { background: #d32f2f; color: white; border-color: #d32f2f; }
-        
-        .math-toolbar { display: flex; gap: 3px; margin-bottom: 5px; width: 100%; justify-content: flex-end; }
-        .math-btn { padding: 4px 8px; font-size: 12px; background: #eee; border: 1px solid #bbb; border-radius: 3px; cursor: pointer; }
-        
-        input[type="text"] { padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 60%; }
-        button#save { width: 100%; padding: 15px; background: #d32f2f; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; margin-top: 20px; }
+        input[type="text"] { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 85%; margin-top: 5px; }
+        button { width: 100%; padding: 15px; background: #d32f2f; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; margin-top: 25px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2 style="text-align:center; color:#d32f2f">🔑 Kalitlarni O'rnatish</h2>
-        <div class="section-title">TEST KALITLARI</div>
+        <h2 style="text-align:center; color:#d32f2f">🔑 Admin Panel</h2>
+        <div class="section-title">TEST KALITLARI (1-35)</div>
         <div id="tk"></div>
-        <div class="section-title">YOZMA JAVOBLAR</div>
+        <div class="section-title">YOZMA KALITLAR (36-45 A/B)</div>
         <div id="wk"></div>
-        <button id="save" onclick="save()">BAZANI YANGILASH</button>
+        <button onclick="save()">KALITLARNI SAQLASH</button>
     </div>
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-
         for(let i=1; i<=35; i++){
             let o = ""; ['A','B','C','D','E'].forEach(x => { o += `<input type="radio" name="k${i}" id="k${i}${x}" value="${x}"><label for="k${i}${x}">${x}</label>`; });
             document.getElementById('tk').innerHTML += `<div class="q-row"><b>${i}.</b><div class="opts">${o}</div></div>`;
         }
-
-        function ins(i, v) { 
-            const el = document.getElementById('k'+i);
-            el.value += v;
-            el.focus();
-        }
-
-        for(let i=36; i<=55; i++){
+        for(let i=36; i<=45; i++){
             document.getElementById('wk').innerHTML += `
                 <div class="q-row">
-                    <b>${i}.</b>
-                    <div class="math-toolbar">
-                        <button class="math-btn" onclick="ins(${i},'√')">√</button>
-                        <button class="math-btn" onclick="ins(${i},'/')">/</button>
-                        <button class="math-btn" onclick="ins(${i},'^')">^</button>
-                        <button class="math-btn" onclick="ins(${i},'sin(')">sin</button>
-                    </div>
-                    <input type="text" id="k${i}" placeholder="Kalit...">
+                    <b>${i}-savol:</b><br>
+                    A: <input type="text" id="k${i}a" placeholder="Kalit A..."><br>
+                    B: <input type="text" id="k${i}b" placeholder="Kalit B...">
                 </div>`;
         }
-
         function save() {
             let t = ""; let w = [];
             for(let i=1; i<=35; i++){
                 let s = document.querySelector(`input[name="k${i}"]:checked`);
                 t += s ? s.value : "X";
             }
-            for(let i=36; i<=55; i++){ w.push(document.getElementById('k'+i).value.trim() || "0"); }
+            for(let i=36; i<=45; i++){
+                w.push(document.getElementById('k'+i+'a').value.trim() || "X");
+                w.push(document.getElementById('k'+i+'b').value.trim() || "X");
+            }
             tg.sendData("SET_KEYS " + t + " " + w.join(","));
             tg.close();
         }
