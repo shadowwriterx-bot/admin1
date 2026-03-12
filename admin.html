@@ -14,36 +14,56 @@
         input[type="radio"] { display: none; }
         label { width: 38px; height: 38px; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; font-weight: bold; }
         input:checked + label { background: #d32f2f; color: white; }
-        .math-toolbar { display: flex; gap: 5px; margin: 10px 0 5px; }
-        .math-btn { padding: 4px 8px; background: #eee; border: 1px solid #bbb; border-radius: 4px; cursor: pointer; }
-        input[type="text"] { padding: 10px; border: 1px solid #ccc; border-radius: 8px; width: 85%; margin-top: 5px; }
-        button { width: 100%; padding: 18px; background: #d32f2f; color: white; border: none; border-radius: 12px; font-weight: bold; margin-top: 30px; cursor: pointer; }
+        .math-toolbar { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0; }
+        .math-btn { padding: 4px 6px; background: #eee; border: 1px solid #bbb; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        input[type="text"] { padding: 10px; border: 1px solid #ccc; border-radius: 8px; width: 88%; margin-top: 5px; }
+        button#save-btn { width: 100%; padding: 18px; background: #d32f2f; color: white; border: none; border-radius: 12px; font-weight: bold; margin-top: 30px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="container">
         <h2 style="text-align:center; color:#d32f2f">🔑 Admin Panel</h2>
-        <div class="section-title">TEST KALITLARI</div>
         <div id="tk"></div>
-        <div class="section-title">YOZMA KALITLAR</div>
+        <div class="section-title">YOZMA KALITLAR (A/B)</div>
         <div id="wk"></div>
-        <button onclick="save()">KALITLARNI SAQLASH</button>
+        <button id="save-btn" onclick="save()">KALITLARNI SAQLASH</button>
     </div>
     <script>
         const tg = window.Telegram.WebApp;
+        tg.expand();
+
         for(let i=1; i<=35; i++){
             let vars = (i >= 33) ? ['A','B','C','D','E','F'] : ['A','B','C','D'];
             let o = ""; vars.forEach(x => { o += `<input type="radio" name="k${i}" id="k${i}${x}" value="${x}"><label for="k${i}${x}">${x}</label>`; });
             document.getElementById('tk').innerHTML += `<div class="q-row"><b>${i}. Savol</b><div class="opts">${o}</div></div>`;
         }
+
         function ins(id, v) { const el = document.getElementById(id); el.value += v; el.focus(); }
+
         for(let i=36; i<=45; i++){
-            document.getElementById('wk').innerHTML += `<div class="q-row"><b>${i}-savol:</b><br>
-                <div class="math-toolbar"><button class="math-btn" onclick="ins('k${i}a','√')">√</button><button class="math-btn" onclick="ins('k${i}a','^')">^</button></div>
-                A: <input type="text" id="k${i}a"><br>
-                <div class="math-toolbar" style="margin-top:10px"><button class="math-btn" onclick="ins('k${i}b','√')">√</button></div>
-                B: <input type="text" id="k${i}b"></div>`;
+            document.getElementById('wk').innerHTML += `
+            <div class="q-row">
+                <b>${i}-savol kalitlari:</b><br>
+                <div class="math-toolbar">
+                    <button class="math-btn" onclick="ins('k${i}a','√')">√</button>
+                    <button class="math-btn" onclick="ins('k${i}a','^')">^</button>
+                    <button class="math-btn" onclick="ins('k${i}a','/')">/</button>
+                    <button class="math-btn" onclick="ins('k${i}a','sin(')">sin</button>
+                    <button class="math-btn" onclick="ins('k${i}a','cos(')">cos</button>
+                </div>
+                A: <input type="text" id="k${i}a" placeholder="Kalit A...">
+                
+                <div class="math-toolbar" style="margin-top:10px">
+                    <button class="math-btn" onclick="ins('k${i}b','√')">√</button>
+                    <button class="math-btn" onclick="ins('k${i}b','^')">^</button>
+                    <button class="math-btn" onclick="ins('k${i}b','/')">/</button>
+                    <button class="math-btn" onclick="ins('k${i}b','sin(')">sin</button>
+                    <button class="math-btn" onclick="ins('k${i}b','cos(')">cos</button>
+                </div>
+                B: <input type="text" id="k${i}b" placeholder="Kalit B...">
+            </div>`;
         }
+
         function save() {
             let t = ""; let w = [];
             for(let i=1; i<=35; i++){
